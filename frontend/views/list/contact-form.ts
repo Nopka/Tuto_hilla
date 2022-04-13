@@ -13,8 +13,10 @@ import { listViewStore } from './list-view-store';
 @customElement('contact-form')
 export class ContactForm extends View {
   protected binder = new Binder(this, ContactModel);
+
   render() {
     const { model } = this.binder;
+
     return html`
       <vaadin-text-field label="Prénom" ${field(model.firstName)}></vaadin-text-field>
       <vaadin-text-field label="Nom" ${field(model.lastName)}></vaadin-text-field>
@@ -23,11 +25,21 @@ export class ContactForm extends View {
       <vaadin-combo-box label="Entreprise" ${field(model.company)}  item-label-path="name" .items=${crmStore.companies}> </vaadin-combo-box>
 
       <div class="flex gap-s">
-        <vaadin-button theme="primary">Enregistrer</vaadin-button>
-        <vaadin-button theme="error">Supprimer</vaadin-button>
-        <vaadin-button theme="tertiary" @click=${listViewStore.cancelEdit}>Annuler</vaadin-button>
+        <vaadin-button theme="primary" @click=${this.save}>
+          ${this.binder.value.id ? 'Enregistrer' : 'Créer'}
+        </vaadin-button>
+        <vaadin-button theme="error" @click=${listViewStore.delete}>
+          Supprimer
+        </vaadin-button>
+        <vaadin-button theme="tertiary" @click=${listViewStore.cancelEdit}>
+          Annuler
+        </vaadin-button>
       </div>
     `;
+  }
+  async save() {
+    await this.binder.submitTo(listViewStore.save);
+    this.binder.clear();
   }
   constructor() {
     super();

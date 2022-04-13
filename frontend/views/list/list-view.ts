@@ -10,6 +10,9 @@ import './contact-form';
 import { crmStore } from 'Frontend/stores/app-store';
 import { listViewStore } from './list-view-store';
 
+import '@vaadin/notification';
+import { uiStore } from 'Frontend/stores/app-store';
+
 @customElement('list-view')
 export class ListView extends View {
   render() {
@@ -26,11 +29,16 @@ export class ListView extends View {
           <vaadin-grid-column path="status.name" header="Status" auto-width></vaadin-grid-column>
           <vaadin-grid-column path="company.name" header="Entreprise" auto-width></vaadin-grid-column>
         </vaadin-grid>
-        <contact-form
-          class="flex flex-col gap-s"
-          ?hidden=${!listViewStore.selectedContact}>
-        </contact-form>
+        <contact-form class="flex flex-col gap-s" ?hidden=${!listViewStore.selectedContact}></contact-form>
       </div>
+
+      <vaadin-notification
+        theme=${uiStore.message.error ? 'error' : 'contrast'}
+        position="bottom-start"
+        .opened=${uiStore.message.open}
+        .renderer=${(root: HTMLElement) =>
+          (root.textContent = uiStore.message.text)}>
+      </vaadin-notification>
     `;
   }
 
@@ -58,13 +66,13 @@ export class ListView extends View {
       'w-full',
       'h-full'
     );
+    
     this.autorun(() => {
       if (listViewStore.selectedContact) {
         this.classList.add("editing");
       } else {
         this.classList.remove("editing");
       }
-
     });
   }
 }

@@ -36,5 +36,17 @@ class ListViewStore {
     cancelEdit() {
         this.selectedContact = null;
     }
+
+    async save(contact: Contact) {
+        await crmStore.saveContact(contact);
+        this.cancelEdit();
+    }
+    
+    async delete() {
+        if (this.selectedContact) {
+            await crmStore.deleteContact(this.selectedContact);
+            this.cancelEdit();
+        }
+    }
 }
 export const listViewStore = new ListViewStore();
